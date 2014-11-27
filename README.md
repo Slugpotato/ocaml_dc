@@ -1,3 +1,0 @@
-OCaml Desk Calculator
-=====================
-

@@ -5,7 +5,7 @@ do
    echo $0: $test starting.
    base=`echo $test | sed 's/\.in$//'`
    dc <$test 2>&1 >$base.dcout
-   ocamldc <$test 2>&1 >$base.ocamldcout
+   ./ocamldc <$test 2>&1 >$base.ocamldcout
    diff $base.dcout $base.ocamldcout
    echo $0: $test finished.
 done

@@ -1,0 +1,31 @@
+This program was completed using pair programming.
+Partner: Nicholas Wood (njwood@ucsc.edu)
+Partner: William Cork (wcork@ucsc.edu)
+
+Nicholas Wood spent   0  hrs alone
+William Cork  spent   0  hrs alone
+Both of us    spent   30 hrs together (pair programming the whole way)
+
+Please grade the work submitted by njwood@ucsc.edu
+and not the work submitted by wcork@ucsc.edu.
+
+submitted on unix.ucsc.edu via:
+For Nicholas Wood (echo wcork > PARTNER):
+submit cmps112-wm.f14 asg4 README PARTNER
+For William Cork (echo njwood > PARTNER):
+submit cmps112-wm.f14 asg4 Makefile bigint.ml bigint.mli maindc.ml\
+scanner.mll README PARTNER
+
+Notes:
+
+All features implemented and tests pass.
+
+Standard dc has a prefix 'dc: ' before any error sent to stderr. We
+lack this prefix and though the tests use diff, they do not capture
+the error output, so the differences are only visible when running
+in the terminal.
+
+Handling divide by zero errors was not specified in the assignment sheet
+or seen in the tests but, we decided to mimic the behaviour of dc
+anyway. The behaviour is to output the error to stderr and leave the
+elements on the stack.

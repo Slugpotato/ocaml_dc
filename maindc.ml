@@ -1,4 +1,11 @@
-(* $Id: maindc.ml,v 1.4 2012-02-16 17:47:43-08 - - $ *)
+(*
+
+;; STUDENTS
+;;    Nicholas Wood
+;;    William Cork
+;;
+
+*)
 
 include Scanner
 include Bigint
@@ -11,36 +18,65 @@ type stack_t = Bigint.bigint Stack.t
 let push = Stack.push
 let pop = Stack.pop
 
+let registers = Hashtbl.create 10
+
 let ord thechar = int_of_char thechar
 type binop_t = bigint -> bigint -> bigint
 
-let print_number number = printf "%s\n%!" (string_of_bigint number)
+let explode s =
+  let rec exp i l =
+    if i < 0 then l else exp (i - 1) (s.[i] :: l) in
+  exp (String.length s - 1) []
 
-let print_stackempty () = printf "stack empty\n%!"
+let print_number number = 
+    let bignumstring = explode (string_of_bigint number)
+    in let rec print_number' number counter =
+       match (number, counter) with
+       | [],_          -> ()
+       | c::d,69       -> 
+            printf "\\\n%c" c;
+            print_number' d 1
+       | c::d,_        ->
+            printf "%c" c;
+            print_number' d (counter+1)
+    in print_number' bignumstring 0;
+       printf "\n%!"
+
+let print_stackempty () = eprintf "stack empty\n%!"
 
 let executereg (thestack: stack_t) (oper: char) (reg: int) =
     try match oper with
-        | 'l' -> printf "operator l reg 0%o is unimplemented\n%!" reg
-        | 's' -> printf "operator s reg 0%o is unimplemented\n%!" reg
+        | 'l' -> 
+            if (Hashtbl.mem registers reg)
+            then push (Hashtbl.find registers reg) thestack
+            else printf "register '%c' (0%o) is empty\n%!"
+                                            (char_of_int reg) reg
+        | 's' ->
+            Hashtbl.replace registers reg (pop thestack)
         | _   -> printf "0%o 0%o is unimplemented\n%!" (ord oper) reg
     with Stack.Empty -> print_stackempty()
 
-let executebinop (thestack: stack_t) (oper: binop_t) =
+let executebinop (thestack: stack_t) (oper: binop_t) (operc: char) =
     try let right = pop thestack
         in  try let left = pop thestack
-                in  push (oper left right) thestack
+                in  if (operc = '/')
+                       && ((Bigint.cmp right Bigint.zero) = 0)
+                    then (eprintf "divide by zero\n%!";
+                         push left thestack;
+                         push right thestack)
+                    else push (oper left right) thestack
             with Stack.Empty -> (print_stackempty ();
-                                 push right thestack)
+                                push right thestack)
     with Stack.Empty -> print_stackempty ()
 
 let execute (thestack: stack_t) (oper: char) =
     try match oper with
-        | '+'  -> executebinop thestack Bigint.add
-        | '-'  -> executebinop thestack Bigint.sub
-        | '*'  -> executebinop thestack Bigint.mul
-        | '/'  -> executebinop thestack Bigint.div
-        | '%'  -> executebinop thestack Bigint.rem
-        | '^'  -> executebinop thestack Bigint.pow
+        | '+'  -> executebinop thestack Bigint.add oper
+        | '-'  -> executebinop thestack Bigint.sub oper
+        | '*'  -> executebinop thestack Bigint.mul oper
+        | '/'  -> executebinop thestack Bigint.div oper
+        | '%'  -> executebinop thestack Bigint.rem oper
+        | '^'  -> executebinop thestack Bigint.pow oper
         | 'c'  -> Stack.clear thestack
         | 'd'  -> push (Stack.top thestack) thestack
         | 'f'  -> Stack.iter print_number thestack
@@ -62,7 +98,7 @@ let toploop (thestack: stack_t) inputchannel =
                  | Operator oper       -> execute thestack oper
                  );
              toploop ()
-        with End_of_file -> printf "End_of_file\n%!";
+        with End_of_file -> printf "%!";(*printf "End_of_file\n%!";*)
     in  toploop ()
 
 let readfiles () =

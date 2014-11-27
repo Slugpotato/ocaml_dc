@@ -1,6 +1,10 @@
-(* $Id: dc.ml,v 1.1 2011-04-26 13:39:18-07 - - $ *)
-
 (*
+
+;; STUDENTS
+;;    Nicholas Wood
+;;    William Cork
+;;
+
 * This file is useless for compilation.  However, for interactive
 * testing it make loading all three files easier.  Normally for
 * interactive use, type
@@ -17,7 +21,9 @@
 
 #use "bigint.ml";;
 #use "scanner.ml";;
-(* #use "maindc.ml";; *)
+#use "maindc.ml";;
+
+
 
 
 
